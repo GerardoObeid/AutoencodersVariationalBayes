@@ -11,7 +11,7 @@ def train():
     print(f"Entrenando en: {device}")
     
     epochs = 50
-    latent_dim = 20 # Dimensión del espacio latente recomendada en el paper
+    latent_dim = 2 # Dimensión del espacio latente recomendada en el paper
     
     # 2. Inicializamos Componentes
     train_loader, _ = get_mnist_dataloaders(batch_size=100)
@@ -51,7 +51,7 @@ def train():
 
     # 4. Guardar el modelo entrenado
     os.makedirs("checkpoints", exist_ok=True)
-    torch.save(model.state_dict(), "checkpoints/vae_mnist.pth")
+    torch.save(model.state_dict(), "checkpoints/vae_mnist_2d.pth")
     print("¡Entrenamiento completado y modelo guardado!")
 
 if __name__ == "__main__":

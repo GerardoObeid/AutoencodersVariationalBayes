@@ -1,0 +1,10 @@
+# Ignore all pycache
+__pycache__/
+
+# Ignore all .ipynb_checkpoints
+.ipynb_checkpoints/
+
+# Ignore Data files
+data/
+
+.python-version
