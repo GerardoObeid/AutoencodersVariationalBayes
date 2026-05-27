@@ -1,13 +1,16 @@
 import torch.nn as nn
 import torch
 
+
 class VAE(nn.Module):
     def __init__(self, input_dim, latent_dim):
         super(VAE, self).__init__()
-        """Followind the VAE architecture from the original paper "Auto-Encoding Variational Bayes" by Kingma and Welling (2013)"
-            We construct the encoder as a MLP with two hidden layers and the decoder as a MLP with two hidden layers as well. 
+        """Following the VAE architecture from the original paper "Auto-Encoding Variational Bayes" by Kingma and Welling (2013)"
+            We construct the encoder as a MLP with two hidden layers and the decoder as a MLP with two hidden layers as well.
             The output of the encoder is split into two parts, one for the mean and one for the log variance of the latent space distribution. 
             The reparameterization trick is used to sample from the latent space during training."""
+        
+        # Add explanation of these part that is the amortization network and that this is a deterministic
         self.encoder = nn.Sequential(
             nn.Linear(input_dim, 500),
             nn.Tanh() # Output mean and log variance
@@ -31,11 +34,11 @@ class VAE(nn.Module):
     def forward(self, x):
         # Encoder's hidden layer
         h = self.encoder(x)
-        
+
         # We obtain the parameters of the latent space distribution
         mu = self.fc_mu(h)
         log_var = self.fc_log_var(h)
-        
+
         # Reparameterization trick to sample from the latent space
         """
             Instead of sampling directly from the distribution defined by mu and log_var:
@@ -46,8 +49,8 @@ class VAE(nn.Module):
 
         """
         z = self.reparameterize(mu, log_var)
-        
+
         # 4. Reconstrucción
         decoded = self.decoder(z)
-        
+
         return decoded, mu, log_var

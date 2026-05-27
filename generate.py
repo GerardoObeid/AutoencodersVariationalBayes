@@ -2,13 +2,14 @@ import torch
 import matplotlib.pyplot as plt
 from models.vae import VAE
 
+
 def generate_random_digits():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    
+
     # 1. Cargamos el modelo
     latent_dim = 20
     model = VAE(input_dim=784, latent_dim=latent_dim).to(device)
-    model.load_state_dict(torch.load("checkpoints/vae_mnist.pth", weights_only=True))
+    model.load_state_dict(torch.load("checkpoints/vae_mnist_20d.pth", weights_only=True))
     model.eval() # Modo evaluación (apaga gradientes)
 
     # 2. Muestreo Aleatorio (Ignoramos el Encoder)
