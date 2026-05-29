@@ -1,6 +1,9 @@
 # Ignore all pycache
 __pycache__/
 
+# Ignore local virtual environments
+.venv/
+
 # Ignore all .ipynb_checkpoints
 .ipynb_checkpoints/
 
