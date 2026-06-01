@@ -9,11 +9,13 @@ class MNIST(Dataset):
     and flattens the 28x28 images into 784-dimensional vectors.
     """
     def __init__(self, root_dir='./data', train=True, download=True):
-        # Define transformations: 
+        # Define transformations:
         # 1. ToTensor() converts PIL image to PyTorch tensor and normalizes pixels to [0.0, 1.0]
-        # 2. Lambda flattens the 2D spatial dimensions (28x28) into a 1D vector (784)
+        # 2. Lambda binarizes: pixels > 0.5 become 1, else 0 (Kingma & Welling paper uses binary MNIST)
+        # 3. Lambda flattens the 2D spatial dimensions (28x28) into a 1D vector (784)
         self.transform = transforms.Compose([
             transforms.ToTensor(),
+            transforms.Lambda(lambda x: (x > 0.5).float()),
             transforms.Lambda(lambda x: torch.flatten(x))
         ])
         
