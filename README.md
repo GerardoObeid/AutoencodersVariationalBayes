@@ -309,7 +309,7 @@ _Dual-axis plot showing:_
 - **Preprocessing**: Normalized to [0, 1] float32 (continuous)
 - **Model**: Gaussian decoder with mean and variance outputs
 - **Loss**: Gaussian negative log-likelihood
-- **Source**: GitHub mirrors (built-in downloader with fallback URLs)
+- **Source**: [Kaggle Frey Face Dataset](https://www.kaggle.com/datasets/vineetvermaai/frey-face-dataset)
 
 ## Implementation Notes
 

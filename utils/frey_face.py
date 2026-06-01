@@ -66,9 +66,9 @@ class FreyFace(Dataset):
         print("\n" + "="*70)
         print("FREY FACE DATASET NOT FOUND")
         print("="*70)
-        print("Please download manually:")
-        print("  wget http://www.cs.toronto.edu/~jmartens/newICML_VAE.zip")
-        print(f"  unzip newICML_VAE.zip -d {self.root_dir}")
+        print("Please download from Kaggle:")
+        print("  https://www.kaggle.com/datasets/vineetvermaai/frey-face-dataset")
+        print(f"Extract frey_rawface.mat to: {os.path.join(self.root_dir, 'frey_face/')}")
         print("="*70 + "\n")
         raise FileNotFoundError(
             f"Frey Face dataset (.mat file) not found at {self.mat_file}"
