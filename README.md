@@ -273,7 +273,7 @@ Traversing the 2D latent space reveals smooth transitions between generated samp
 #### MNIST Manifold
 
 ![MNIST Manifold](results/manifold_vae_mnist.png)
-_15×15 grid showing smooth transitions in the 2D latent space. Both AEVB-trained and Wake-Sleep-trained models with Nz=2 produce similar manifold structure._
+_20×20 grid showing smooth transitions in the 2D latent space. Both AEVB-trained and Wake-Sleep-trained models with Nz=2 produce similar manifold structure._
 
 #### Frey Face Manifold
 
