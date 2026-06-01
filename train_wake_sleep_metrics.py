@@ -145,7 +145,6 @@ def train_wake_sleep(dataset='mnist', latent_dim=20, epochs=50, batch_size=128,
                 recon_mu = model.dec_mu(h_dec)
                 recon_log_var = model.dec_log_var(h_dec)
                 
-                # Apply the variance clamp to prevent gradient explosion!
                 sq_err = (recon_mu - data).pow(2)
                 
                 # Raw math

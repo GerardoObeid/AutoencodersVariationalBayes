@@ -12,12 +12,11 @@ def plot_frey_manifold():
     latent_dim = 2
     model = VAE(input_dim=560, latent_dim=latent_dim, hidden_dim=200, dataset='frey_face').to(device)
     
-    # IMPORTANT: Update this to point to your actual Frey Face .pth file
     model.load_state_dict(torch.load("checkpoints/aevb_frey_face_2d.pth", weights_only=True))
     model.eval()
 
     # Create the canvas for the 20x20 grid of images
-    n = 20
+    n = 15
     height = 28
     width = 20
     
@@ -25,8 +24,8 @@ def plot_frey_manifold():
     figure = np.zeros((height * n, width * n))
 
     # Generate X and Y axes using the inverse CDF (norm.ppf)
-    grid_x = norm.ppf(np.linspace(0.01, 0.99, n))
-    grid_y = norm.ppf(np.linspace(0.01, 0.99, n))
+    grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
+    grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
 
     with torch.no_grad():
         for i, yi in enumerate(grid_y):

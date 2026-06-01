@@ -24,10 +24,6 @@ def vae_loss(recon_output, x, mu, log_var, dataset='mnist'):
     # Kullback-Leibler Divergence (KLD)
     # Closed-form solution from Kingma & Welling (2013).
     # This remains exactly the same for all AEVB models.
-    # KLD is the same for both
-    # Kullback-Leibler Divergence (KLD)
-    # Closed-form solution from Kingma & Welling (2013).
-    # This remains exactly the same for all AEVB models.
     KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
 
     if dataset == 'mnist':
@@ -38,13 +34,7 @@ def vae_loss(recon_output, x, mu, log_var, dataset='mnist'):
         # Unpack the tuple
         recon_mu, recon_log_var = recon_output
 
-        # PREVENT VARIANCE COLLAPSE 
-        # Clamp the log variance so it cannot drop below -3.0 (variance of ~0.05).
-        # This mathematically stops the division-by-zero gradient explosion.
-        # We implemented this because we observed that the training ws unstable and the model was collapsing
         sq_err = (recon_mu - x).pow(2)
-        
-        # The pure, unconstrained math
         recon_loss = 0.5 * torch.sum(math.log(2 * math.pi) + recon_log_var + sq_err / recon_log_var.exp())
         
     total_loss = recon_loss + KLD

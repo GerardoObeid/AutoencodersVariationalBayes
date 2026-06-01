@@ -20,8 +20,8 @@ def plot_manifold():
 
     # Generate X and Y axes using the inverse CDF (norm.ppf)
     # This distributes points based on the probability of a standard normal N(0,1)
-    grid_x = norm.ppf(np.linspace(0.01, 0.99, n))
-    grid_y = norm.ppf(np.linspace(0.01, 0.99, n))
+    grid_x = norm.ppf(np.linspace(0.05, 0.95, n))
+    grid_y = norm.ppf(np.linspace(0.05, 0.95, n))
 
     with torch.no_grad():
         for i, yi in enumerate(grid_y):
