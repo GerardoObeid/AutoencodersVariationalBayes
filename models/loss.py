@@ -1,35 +1,51 @@
+import math
+
 import torch
 import torch.nn.functional as F
 
-
-def vae_loss(recon_x, x, mu, log_var):
+def vae_loss(recon_output, x, mu, log_var, dataset='mnist'):
     """
-    This script calculates the loss for the VAE (Negative ELBO).
+    Compute the VAE loss (negative Evidence Lower Bound - ELBO).
+
     The loss consists of two parts:
-        1. Reconstruction Error (BCE): Measures how well the decoder can reconstruct the input data.
-        2. Kullback-Leibler Divergence (KLD): Measures how closely the learned latent distribution (parameterized by mu and log_var) 
+        1. Reconstruction Error: Measures how well the decoder reconstructs
+           the input data (Bernoulli for MNIST, Gaussian for Frey Face).
+        2. Kullback-Leibler Divergence (KLD): Measures how closely the learned
+           latent distribution matches the prior.
 
-    The paper "Auto-Encoding Variational Bayes" by Kingma and Welling (2013) shows that by increasing the latent space,
-    the model doesn't overfit because of the regularization effect of the KL divergence. 
-    The KL divergence encourages the latent space to be close to a standard normal distribution,
-    which prevents the model from simply memorizing the training data and promotes generalization to unseen data.
     Args:
-        recon_x: The reconstructed output from the decoder (after passing through sigmoid).
+        recon_x: The reconstructed output from the decoder.
         x: The original input data (flattened).
-        mu: The mean of the latent distribution (output from the encoder).
-        log_var: The log variance of the latent distribution (output from the encoder).
+        mu: The mean of the latent distribution (encoder output).
+        log_var: The log variance of the latent distribution (encoder output).
+        dataset: String indicating which observation model to use.
     """
 
-    # 1. Reconstruction Error (BCE)
-    # We use reduction='sum' because we want the sum over all pixels (784) 
-    # and over the entire batch, as dictated by the probabilistic theory.
-    BCE = F.binary_cross_entropy(recon_x, x, reduction='sum')
-    
-    # 2. Kullback-Leibler Divergence (KLD)
-    # Analytical closed-form formula from the paper: -0.5 * sum(1 + log(sigma^2) - mu^2 - sigma^2)
+    # Kullback-Leibler Divergence (KLD)
+    # Closed-form solution from Kingma & Welling (2013).
+    # This remains exactly the same for all AEVB models.
+    # KLD is the same for both
+    # Kullback-Leibler Divergence (KLD)
+    # Closed-form solution from Kingma & Welling (2013).
+    # This remains exactly the same for all AEVB models.
     KLD = -0.5 * torch.sum(1 + log_var - mu.pow(2) - log_var.exp())
-    
-    # The total loss we want to minimize is the sum of both
-    total_loss = BCE + KLD
-    
-    return total_loss, BCE, KLD
+
+    if dataset == 'mnist':
+        # recon_output is just the single tensor here
+        recon_loss = F.binary_cross_entropy(recon_output, x, reduction='sum')
+
+    elif dataset == 'frey_face':
+        # Unpack the tuple
+        recon_mu, recon_log_var = recon_output
+
+        # PREVENT VARIANCE COLLAPSE 
+        # Clamp the log variance so it cannot drop below -3.0 (variance of ~0.05).
+        # This mathematically stops the division-by-zero gradient explosion.
+        # We implemented this because we observed that the training ws unstable and the model was collapsing
+        sq_err = (recon_mu - x).pow(2)
+        
+        # The pure, unconstrained math
+        recon_loss = 0.5 * torch.sum(math.log(2 * math.pi) + recon_log_var + sq_err / recon_log_var.exp())
+        
+    total_loss = recon_loss + KLD
+    return total_loss, recon_loss, KLD
