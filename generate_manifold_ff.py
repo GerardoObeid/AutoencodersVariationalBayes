@@ -2,8 +2,8 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import norm
-# Ensure your VAE class handles the input_dim parameter correctly
-from models.vae import VAE 
+from models.vae import VAE
+
 
 def plot_frey_manifold():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -11,16 +11,16 @@ def plot_frey_manifold():
     # Load the model configured for 2D latent space and Frey Face input
     latent_dim = 2
     model = VAE(input_dim=560, latent_dim=latent_dim, hidden_dim=200, dataset='frey_face').to(device)
-    
+
     model.load_state_dict(torch.load("checkpoints/aevb_frey_face_2d.pth", weights_only=True))
     model.eval()
 
     # Create the canvas for the 20x20 grid of images
-    n = 15
+    n = 10
     height = 28
     width = 20
-    
-    # The canvas now needs distinct height and width multipliers
+
+    # Allocate canvas array with dataset-specific dimensions
     figure = np.zeros((height * n, width * n))
 
     # Generate X and Y axes using the inverse CDF (norm.ppf)
@@ -40,31 +40,25 @@ def plot_frey_manifold():
                 # Reshape to 28x20
                 face = x_decoded.view(height, width).cpu().numpy()
                 
-                # Note: Depending on how the original .mat file was flattened, 
-                # if the faces look scrambled or rotated 90 degrees, replace the line above with:
-                # face = x_decoded.cpu().numpy().reshape(height, width, order='F')
-
                 # Place the face at the corresponding position on the canvas
                 figure[i * height: (i + 1) * height,
                        j * width: (j + 1) * width] = face
 
-    # Plot the result
-    # Adjusted figsize to reflect the 28:20 (or 1.4:1) height-to-width ratio
-    # Find the actual min and max values the Sigmoid dared to output
+    # Compute empirical minimum and maximum intensities
     canvas_min = figure.min()
     canvas_max = figure.max()
-    
-    # Mathematically stretch those values to span from exactly 0.0 to 1.0
+
+    # Min-max normalization to span [0, 1]
     figure = (figure - canvas_min) / (canvas_max - canvas_min + 1e-8)
-    # ------------------------------------------
 
     # Plot the result
     plt.figure(figsize=(10, 14)) 
-    plt.imshow(figure, cmap='gray', vmin=0, vmax=1) # Lock the display to our stretched bounds
+    plt.imshow(figure, cmap='gray', vmin=0, vmax=1)
     plt.axis('off')
     plt.title("2D Manifold of Latent Space (VAE Frey Face)", fontsize=16)
     plt.tight_layout()
     plt.savefig("results/manifold_vae_freyface.png", dpi=300)
+
 
 if __name__ == "__main__":
     plot_frey_manifold()
