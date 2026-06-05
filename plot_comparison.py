@@ -10,7 +10,7 @@ def plot_comparison():
     """
     results_dir = "results/metrics"
 
-    # Define configurations to plot
+    # All the configurations we implemented and saved previously
     mnist_configs = [
         {"latent_dim": 3, "dataset": "mnist"},
         {"latent_dim": 5, "dataset": "mnist"},
@@ -83,7 +83,6 @@ def plot_comparison():
     # 2. FREY FACE PLOTS (Bottom Row: Subplots 7 to 10)
     # ==========================================
     for idx, config in enumerate(frey_configs):
-        # Start at index 7 to skip slot 6 (bottom left corner)
         ax = plt.subplot(2, 5, idx + 7)
         latent_dim = config["latent_dim"]
         dataset = config["dataset"]
@@ -132,25 +131,16 @@ def plot_comparison():
     # 3. GLOBAL AXIS CROPPING
     # ==========================================
     for ax in fig.axes:
-        # Prevent the empty legend axis from throwing errors
-        if not ax.has_data():
-            continue
-            
-        # Lock X-axis from 10^5 to 10^8
         ax.set_xlim([1e5, 1e8]) 
-        
-        # Check title to apply the correct Y-axis crop
+
         title = ax.get_title()
         if 'MNIST' in title:
             ax.set_ylim([-150, -70])
         elif 'Frey Face' in title:
             ax.set_ylim([0, 1600])
 
-    # ==========================================
-    # 4. LEGEND (Bottom Row, First Column: Subplot 6)
-    # ==========================================
     ax_legend = plt.subplot(2, 5, 6)
-    ax_legend.axis("off")  # Hides the empty graph axes
+    ax_legend.axis("off")
             
     # Custom handles to match the plotted styles perfectly
     handles = [
@@ -160,13 +150,13 @@ def plot_comparison():
         plt.Line2D([0], [0], color="r", linestyle="-", linewidth=2),
     ]
     labels = ["Wake-Sleep (test)", "Wake-Sleep (train)", "AEVB (test)", "AEVB (train)"]
-    
-    # Place it squarely in the middle of the empty subplot frame
+
     ax_legend.legend(handles, labels, loc="center", fontsize=11, frameon=True, edgecolor="black")
 
     plt.tight_layout()
     plt.savefig("results/comparison_aevb_vs_wake_sleep.png", dpi=150, bbox_inches="tight")
     print("Comparison plot saved to results/comparison_aevb_vs_wake_sleep.png")
+
 
 if __name__ == "__main__":
     plot_comparison()

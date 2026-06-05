@@ -9,7 +9,6 @@ import json
 from tqdm import tqdm
 
 
-# Change the function signature to include weight_decay
 def train_aevb(dataset='mnist', latent_dim=20, epochs=50, batch_size=128, lr=1e-3, save_metrics=True):   
     """
     Train VAE with AEVB algorithm and record metrics during training.
@@ -43,13 +42,15 @@ def train_aevb(dataset='mnist', latent_dim=20, epochs=50, batch_size=128, lr=1e-
 
     # Initialize model WITH the dataset and hidden_dim parameters
     model = VAE(
-        input_dim=input_dim, 
-        latent_dim=latent_dim, 
-        hidden_dim=hidden_dim, 
+        input_dim=input_dim,
+        latent_dim=latent_dim,
+        hidden_dim=hidden_dim,
         dataset=dataset
     ).to(device)
 
-    # Adagrad and add weight decay (L2 penalty) representing the N(0, I) prior
+    # Initialize Adagrad optimizer.
+    # L2 weight decay acts as a Gaussian prior on the network weights
+    optimizer = optim.Adagrad(model.parameters(), lr=lr, weight_decay=1e-4)
     optimizer = optim.Adagrad(model.parameters(), lr=lr, weight_decay=1e-4)
 
     # Metrics tracking
@@ -71,10 +72,10 @@ def train_aevb(dataset='mnist', latent_dim=20, epochs=50, batch_size=128, lr=1e-
             current_batch_size = data.size(0)
 
             optimizer.zero_grad()
-            
+
             # recon_batch will be a single tensor (MNIST) or a tuple (Frey Face)
             recon_batch, mu, log_var = model(data)
-            
+
             # The loss function will correctly unpack the tuple for Frey Face
             loss, _, _ = vae_loss(recon_batch, data, mu, log_var, dataset=dataset)
 

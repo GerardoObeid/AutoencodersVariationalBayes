@@ -32,8 +32,6 @@ class FreyFace(Dataset):
         if data.max() > 1:
             data = data / 255.0
 
-        # --- THE FIX: Deterministic shuffle before splitting ---
-        # Using a fixed seed ensures the train/test split doesn't overlap
         indices = np.random.RandomState(42).permutation(len(data))
         shuffled_data = data[indices]
 
@@ -54,7 +52,6 @@ class FreyFace(Dataset):
             data = mat['ff'].T  # Transpose to get (1965, 560)
             data = data.astype(np.float32)
 
-            # Save with compression for faster I/O
             np.save(self.data_file, data)
             elapsed = time.time() - start
             print(f"✓ Loaded and cached in {elapsed:.2f}s to {self.data_file}")
@@ -95,7 +92,6 @@ def get_frey_face_dataloaders(batch_size=128, data_dir='./data'):
     train_dataset = FreyFace(root_dir=data_dir, train=True)
     test_dataset = FreyFace(root_dir=data_dir, train=False)
 
-    # Frey Face is small (~1500 samples), so use fewer workers
     train_loader = DataLoader(
         dataset=train_dataset,
         batch_size=batch_size,

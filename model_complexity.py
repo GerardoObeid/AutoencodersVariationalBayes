@@ -4,11 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from models.vae import VAE
 
+
 def extract_and_plot_complexity():
     latent_dims = [2, 3, 5, 10, 20, 200]
     input_dim = 560  # Frey Face input dimension
     results_dir = "results/metrics"
-    
+
     # Storage for table and plot
     param_counts = []
     final_train_elbo = []
@@ -16,12 +17,12 @@ def extract_and_plot_complexity():
     table_rows = []
     
     for nz in latent_dims:
-        # 1. Calculate exact parameters
+        # 1. Initialize model depending on the datasest
         model = VAE(input_dim=input_dim, latent_dim=nz, dataset='mnist')
         total_params = sum(p.numel() for p in model.parameters() if p.requires_grad)
         param_counts.append(total_params)
         
-        # 2. Extract final converged ELBO scores from your JSON runs
+        # 2. Extract final converged ELBO scores from JSON saved metrics for each configuration
         aevb_path = os.path.join(results_dir, f"aevb_mnist_{nz}d_metrics.json")
 
         if os.path.exists(aevb_path):
@@ -31,15 +32,11 @@ def extract_and_plot_complexity():
 
             train_score = -metrics["train_loss"][-1] if metrics["train_loss"][-1] > 0 else metrics["train_loss"][-1]
             test_score = -metrics["test_loss"][-1] if metrics["test_loss"][-1] > 0 else metrics["test_loss"][-1]
-        else:
-            # Fallbacks if you haven't finished running all dimensions yet
-            train_score = np.nan
-            test_score = np.nan
-            
+
+
         final_train_elbo.append(train_score)
         final_test_elbo.append(test_score)
-        
-        # Format row for markdown output
+
         table_rows.append(f"| {nz} | {total_params:,} | {train_score:.2f} | {test_score:.2f} |")
 
     # ==========================================
@@ -56,7 +53,6 @@ def extract_and_plot_complexity():
     # ==========================================
     fig, ax1 = plt.subplots(figsize=(10, 6))
 
-    # X-axis setup (Using a categorical spacing so 200 doesn't squish 2, 3, 5)
     x_indices = np.arange(len(latent_dims))
 
     # Left Y-Axis: ELBO Scores
@@ -75,21 +71,22 @@ def extract_and_plot_complexity():
     line3 = ax2.plot(x_indices, param_counts, color='blue', linestyle='-.', marker='s', linewidth=2, label='Parameter Count')
     ax2.set_yscale('log')
     ax2.tick_params(axis='y', labelcolor=color)
-    
+
     # Set pristine X-axis ticks
     plt.xticks(x_indices, [str(nz) for nz in latent_dims])
-    
+
     # Consolidated Legend
     lines = line1 + line2 + line3
     labels = [l.get_label() for l in lines]
     ax1.legend(lines, labels, loc='lower center', bbox_to_anchor=(0.5, -0.18), ncol=3, frameon=True, edgecolor='black')
-    
+
     plt.title('The Complexity Trade-off: Parameter Growth vs. Overfitting', fontsize=12, fontweight='bold', pad=15)
     plt.tight_layout()
-    
+
     os.makedirs("results", exist_ok=True)
     plt.savefig("results/complexity_vs_overfitting.png", dpi=300, bbox_inches='tight')
     print("\nComplexity analysis plot saved to results/complexity_vs_overfitting.png")
+
 
 if __name__ == "__main__":
     extract_and_plot_complexity()

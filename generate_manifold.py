@@ -7,7 +7,7 @@ from models.vae import VAE
 def plot_manifold():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load the model configured for 2D latent space
+    # Load the model
     latent_dim = 2
     model = VAE(input_dim=784, latent_dim=latent_dim).to(device)
     model.load_state_dict(torch.load("checkpoints/vae_mnist_2d.pth", weights_only=True))
@@ -35,7 +35,7 @@ def plot_manifold():
                 # Reshape to 28x28
                 digit = x_decoded.view(digit_size, digit_size).cpu().numpy()
 
-                # Place the digit at the corresponding position on the canvas
+                # Place the digit at the corresponding indrx
                 figure[i * digit_size: (i + 1) * digit_size,
                        j * digit_size: (j + 1) * digit_size] = digit
 
@@ -47,5 +47,7 @@ def plot_manifold():
     plt.tight_layout()
     plt.savefig("results/manifold_vae_mnist.png", dpi=300)
 
+
 if __name__ == "__main__":
     plot_manifold()
+

@@ -17,9 +17,9 @@ def train_model(task):
     algo = task["run_algo"]
 
     if dataset == "frey_face":
+        epochs = "51000"
+    else:
         epochs = "6107"
-    else:               
-        epochs = "200"
 
     try:
         if algo == "aevb":
@@ -41,9 +41,9 @@ def train_model(task):
             "--batch_size", "100",
             "--lr", "0.02",
         ]
-        
+
         result = subprocess.run(cmd, capture_output=True, text=True)
-        
+
         if result.returncode != 0:
             print(f"[{dataset} Nz={latent_dim}] {name} FAILED")
             print(result.stderr)
@@ -72,7 +72,7 @@ def main():
         {"dataset": "frey_face", "latent_dim": 20, "algorithm": "both"},
     ]
 
-    # Flatten configs into individual executable tasks to run both algorithms perfectly in parallel
+    # Flatten configs into individual executable tasks to run in parallel
     tasks = []
     for config in configs:
         if config["algorithm"] in ["aevb", "both"]:
@@ -97,8 +97,8 @@ def main():
 
     start_time = time.time()
 
-    # Controls maximum parallel processes on your GPU.
-    max_workers = 9
+    # Controls maximum parallel processes.
+    max_workers = 6
 
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = {executor.submit(train_model, task): task for task in tasks}
@@ -113,10 +113,10 @@ def main():
                 algo_name = "AEVB" if task["run_algo"] == "aevb" else "Wake-Sleep"
                 if result:
                     completed += 1
-                    print(f"\n✓ COMPLETED: {algo_name} | {task['dataset']} Nz={task['latent_dim']}")
+                    print(f"\nCOMPLETED: {algo_name} | {task['dataset']} Nz={task['latent_dim']}")
                 else:
                     failed += 1
-                    print(f"\n✗ FAILED: {algo_name} | {task['dataset']} Nz={task['latent_dim']}")
+                    print(f"\nFAILED: {algo_name} | {task['dataset']} Nz={task['latent_dim']}")
             except Exception as e:
                 failed += 1
                 algo_name = "AEVB" if task["run_algo"] == "aevb" else "Wake-Sleep"
@@ -131,17 +131,6 @@ def main():
     print(f"Failed tasks: {failed}/{len(tasks)}")
     print(f"Total time: {elapsed/3600:.2f} hours")
     print("=" * 70)
-
-    if failed == 0:
-        print("\nGenerating comparison plot...")
-        result = subprocess.run([sys.executable, "plot_comparison.py"], capture_output=False)
-        if result.returncode == 0:
-            print("✓ Comparison plot generated!")
-        else:
-            print("✗ Failed to generate comparison plot")
-            return False
-
-    return failed == 0
 
 
 if __name__ == "__main__":

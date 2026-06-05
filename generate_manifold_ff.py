@@ -15,7 +15,7 @@ def plot_frey_manifold():
     model.load_state_dict(torch.load("checkpoints/aevb_frey_face_2d.pth", weights_only=True))
     model.eval()
 
-    # Create the canvas for the 20x20 grid of images
+    # Create the canvas for the 10x10 grid of images
     n = 10
     height = 28
     width = 20

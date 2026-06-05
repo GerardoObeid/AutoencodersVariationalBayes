@@ -2,6 +2,7 @@ import torch
 from torchvision import datasets, transforms
 from torch.utils.data import Dataset
 
+
 class MNIST(Dataset):
     """
     A custom wrapper for the MNIST dataset to match the VAE paper's requirements.
@@ -18,7 +19,7 @@ class MNIST(Dataset):
             transforms.Lambda(lambda x: (x > 0.5).float()),
             transforms.Lambda(lambda x: torch.flatten(x))
         ])
-        
+
         # Load the standard MNIST dataset from torchvision
         self.mnist_data = datasets.MNIST(
             root=root_dir,
