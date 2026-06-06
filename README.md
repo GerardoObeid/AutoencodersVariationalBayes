@@ -4,8 +4,9 @@ This project implements Variational Autoencoders for unsupervised learning, comp
 
 ## Developers
 
-Gerardo Obeid Guzmán
-Jorge Echeverría de Uribarri
+**Gerardo Obeid Guzmán**
+
+**Jorge Echevarría de Uribarri**
 
 ## Papers Cited
 
@@ -137,24 +138,14 @@ This will:
    - **MNIST**: Nz ∈ {3, 5, 10, 20, 200} with AEVB & Wake-Sleep
    - **Frey Face**: Nz ∈ {2, 5, 10, 20} with AEVB & Wake-Sleep
 2. Save metrics to `results/metrics/` (format: `{method}_{dataset}_{latent_dim}d_metrics.json`)
-3. Automatically generate comparison plot at `results/comparison_aevb_vs_wake_sleep.png`
-
-### Manual Configuration-by-Configuration
-
-For individual experiments or troubleshooting:
 
 ```bash
-# MNIST with increasing latent dimensions
-python train_aevb_metrics.py --dataset mnist --latent_dim 3 --epochs 200 --batch_size 100 --lr 0.02
-python train_wake_sleep_metrics.py --dataset mnist --latent_dim 3 --epochs 200 --batch_size 100 --lr 0.02
-
-# Frey Face (uses more epochs for convergence)
-python train_aevb_metrics.py --dataset frey_face --latent_dim 2 --epochs 6107 --batch_size 100 --lr 0.02
-python train_wake_sleep_metrics.py --dataset frey_face --latent_dim 2 --epochs 6107 --batch_size 100 --lr 0.02
-
-# Generate comparison plot after training
-python plot_comparison.py
+python plot_comparisson.py
 ```
+
+This will:
+
+- Access the metrics and plot the comparisson
 
 ### Other Utilities
 
@@ -170,7 +161,7 @@ python generate.py
 python generate_manifold.py
 ```
 
-Output: `results/manifold_vae_mnist.png` (15×15 grid of generated digits)
+Output: `results/manifold_vae_mnist.png` (10×10 grid of generated digits)
 
 #### Visualize 2D latent space manifold (Frey Face)
 
@@ -179,7 +170,7 @@ python generate_manifold_ff.py
 ```
 
 Requirements: Trained AEVB model with latent_dim=2 at `checkpoints/aevb_frey_face_2d.pth`
-Output: `results/manifold_vae_freyface.png` (15×15 grid of generated faces)
+Output: `results/manifold_vae_freyface.png` (10×10 grid of generated faces)
 
 #### Analyze model complexity vs performance
 
@@ -278,7 +269,7 @@ _20×20 grid showing smooth transitions in the 2D latent space. Both AEVB-traine
 #### Frey Face Manifold
 
 ![Frey Face Manifold](results/manifold_vae_freyface.png)
-_15×15 grid of generated faces. The Gaussian decoder captures continuous pixel intensities, allowing the model to generate diverse faces across the latent space._
+_10×10 grid of generated faces. The Gaussian decoder captures continuous pixel intensities, allowing the model to generate diverse faces across the latent space._
 
 ### Model Complexity vs Performance
 
